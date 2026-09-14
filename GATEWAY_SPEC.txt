@@ -1,0 +1,198 @@
+========================================================
+  NETFIE BULK SMS GATEWAY — REST API SPECIFICATION
+  Version: 3.2.0+
+  Endpoint: POST /wp-json/netfie/v1/gateway
+========================================================
+
+BASE URL
+--------
+  https://yourwebsite.com/wp-json/netfie/v1/gateway
+
+  Replace "yourwebsite.com" with the domain where your
+  WordPress + Netfie plugin is installed.
+
+REQUEST METHOD
+--------------
+  POST only
+  Content-Type: application/x-www-form-urlencoded
+  OR Content-Type: multipart/form-data
+  OR application/json (body must include all params)
+
+AUTHENTICATION
+--------------
+  All requests MUST include:
+    auth_key = <your API key>
+
+  The API Key is configured in:
+    WordPress Admin → Netfie SMS → Settings → API Key
+
+  If auth_key is missing or wrong, the API returns:
+    {"success": false, "message": "Unauthorized"}
+
+========================================================
+  ACTIONS
+========================================================
+
+------------------------------------------------------
+ACTION: push
+------------------------------------------------------
+  Description : Add one or more SMS tasks to the queue.
+                The Android app will pick them up and send.
+
+  Parameters:
+    auth_key        (required) Your API key
+    action          (required) "push"
+    numbers         (required) Comma-separated phone numbers
+                               Example: 01711111111,01822222222
+    message         (required) The SMS message text
+    sim_slot        (optional) SIM slot: 0 = SIM 1, 1 = SIM 2
+                               Default: 0
+    delay           (optional) Delay in seconds between each SMS
+                               Default: 0
+    scheduled_time  (optional) Unix timestamp (seconds) to schedule.
+                               If set, SMS is queued for future delivery.
+                               Default: null (send immediately)
+
+  Example Request:
+    POST /wp-json/netfie/v1/gateway
+    auth_key=MY_SECRET_KEY&action=push&numbers=01711111111,01822222222&message=Hello+World&sim_slot=0&delay=2
+
+  Success Response:
+    {
+      "success": true,
+      "message": "Tasks added",
+      "task_ids": [101, 102],
+      "skipped": ["01933333333"]   // blacklisted numbers are skipped
+    }
+
+  Error Response:
+    {
+      "success": false,
+      "message": "Missing required parameter: numbers"
+    }
+
+  Notes:
+    - Numbers in the blacklist (wp_netfie_blacklist) are automatically
+      skipped and returned in the "skipped" array.
+    - Each phone number creates one task entry in wp_netfie_queue.
+
+------------------------------------------------------
+ACTION: pull
+------------------------------------------------------
+  Description : Used by the Android app to fetch pending tasks.
+                Your web app typically does NOT need to call this.
+
+  Parameters:
+    auth_key   (required) Your API key
+    action     (required) "pull"
+    device_id  (optional) Android device identifier
+
+  Success Response:
+    {
+      "success": true,
+      "tasks": [
+        {
+          "id": 101,
+          "number": "01711111111",
+          "message": "Hello World",
+          "sim_slot": 0,
+          "delay": 2,
+          "status": "pending",
+          "scheduled_time": null,
+          "created_at": "2026-09-14 10:00:00"
+        }
+      ]
+    }
+
+  Notes:
+    - Only tasks with status "pending" (or "scheduled" if time is due)
+      are returned.
+    - After fetching, the Android app updates status to "processing".
+
+------------------------------------------------------
+ACTION: update_status
+------------------------------------------------------
+  Description : Used by the Android app to report SMS delivery status.
+                Your web app typically does NOT need to call this.
+
+  Parameters:
+    auth_key   (required) Your API key
+    action     (required) "update_status"
+    task_id    (required) ID of the task to update
+    status     (required) New status value (see STATUS VALUES below)
+
+  Success Response:
+    {
+      "success": true,
+      "message": "Status updated"
+    }
+
+------------------------------------------------------
+ACTION: list
+------------------------------------------------------
+  Description : List all tasks in the queue (for your web dashboard).
+
+  Parameters:
+    auth_key   (required) Your API key
+    action     (required) "list"
+    status     (optional) Filter by status. One of:
+                          pending | scheduled | processing | sent | failed
+    limit      (optional) Number of results (default: 50, max: 500)
+    offset     (optional) Pagination offset (default: 0)
+
+  Success Response:
+    {
+      "success": true,
+      "total": 250,
+      "tasks": [
+        {
+          "id": 101,
+          "number": "01711111111",
+          "message": "Hello World",
+          "sim_slot": 0,
+          "status": "sent",
+          "created_at": "2026-09-14 10:00:00",
+          "sent_at": "2026-09-14 10:00:05"
+        }
+      ]
+    }
+
+========================================================
+  STATUS VALUES
+========================================================
+
+  pending     Task is queued, waiting for Android app to pick up.
+  scheduled   Task is scheduled for a future time.
+  processing  Android app has fetched the task and is sending.
+  sent        SMS was sent successfully.
+  failed      SMS sending failed (network error, invalid number, etc.)
+
+========================================================
+  ERROR CODES
+========================================================
+
+  HTTP 401 Unauthorized  →  auth_key is missing or invalid
+  HTTP 400 Bad Request   →  Missing required parameter or invalid action
+  HTTP 200 with
+    "success": false     →  API-level error (see "message" field)
+
+========================================================
+  BLACKLIST
+========================================================
+
+  Numbers added to the blacklist (via WP Admin → Netfie SMS → Blacklist)
+  are automatically filtered from ALL "push" requests.
+  They are returned in the "skipped" array in the push response.
+
+========================================================
+  RATE LIMITS
+========================================================
+
+  There are no hard rate limits enforced by the plugin, but:
+  - The Android app sends one SMS at a time with configurable delay.
+  - Do not push more than 1000 tasks per batch to avoid server load.
+  - Use the "delay" parameter to pace delivery (recommended: 2–5 seconds).
+
+========================================================
+  END OF SPECIFICATION
+========================================================
