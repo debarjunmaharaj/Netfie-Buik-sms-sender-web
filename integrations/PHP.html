@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netfie Bulk SMS Gateway — Pure & Core PHP Integration</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1e293b; background: #f8fafc; }
+  .card { background: #ffffff; padding: 36px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+  pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-size: 14px; }
+  code { font-family: 'Courier New', Courier, monospace; }
+  .badge { display: inline-block; background: #0284c7; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; }
+  a { color: #0284c7; text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">Netfie Official Integration Guide</span>
+  <h1>Pure & Core PHP Integration</h1>
+  <pre><code># Pure &amp; Core PHP Integration — Netfie Bulk SMS Gateway
+
+## Overview
+Connect any native PHP script, custom CMS, or legacy codebase without requiring Composer or third-party libraries.
+
+### Standard cURL Helper:
+```php
+&lt;?php
+function sendNetfieSms($numbers, $message, $simSlot = 0, $delay = 2) {
+    $apiUrl = &#039;https://your-domain.com/api/sms/gateway&#039;;
+    $apiKey = &#039;YOUR_SECRET_API_KEY&#039;;
+
+    $payload = [
+        &#039;auth_key&#039; =&gt; $apiKey,
+        &#039;action&#039;   =&gt; &#039;push&#039;,
+        &#039;numbers&#039;  =&gt; is_array($numbers) ? implode(&#039;,&#039;, $numbers) : $numbers,
+        &#039;message&#039;  =&gt; $message,
+        &#039;sim_slot&#039; =&gt; (int)$simSlot,
+        &#039;delay&#039;    =&gt; (int)$delay,
+    ];
+
+    $ch = curl_init($apiUrl);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+    $response = curl_exec($ch);
+    $error = curl_error($ch);
+    curl_close($ch);
+
+    if ($error) {
+        return [&#039;success&#039; =&gt; false, &#039;error&#039; =&gt; $error];
+    }
+
+    return json_decode($response, true);
+}
+
+// Example Usage
+$result = sendNetfieSms(&#039;01711111111,01822222222&#039;, &#039;Test alert from Core PHP&#039;);
+print_r($result);
+?&gt;
+```</code></pre>
+  <p><a href="../README.md">&larr; Back to Netfie Main Documentation</a></p>
+</div>
+</body>
+</html>

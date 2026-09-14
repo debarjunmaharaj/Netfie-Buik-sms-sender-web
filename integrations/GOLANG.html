@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netfie Bulk SMS Gateway — Go / Golang Integration</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1e293b; background: #f8fafc; }
+  .card { background: #ffffff; padding: 36px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+  pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-size: 14px; }
+  code { font-family: 'Courier New', Courier, monospace; }
+  .badge { display: inline-block; background: #0284c7; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; }
+  a { color: #0284c7; text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">Netfie Official Integration Guide</span>
+  <h1>Go / Golang Integration</h1>
+  <pre><code># Go / Golang Integration — Netfie Bulk SMS Gateway
+
+## Overview
+High-concurrency, memory-efficient SMS dispatching using Go&#039;s built-in `net/http` package.
+
+```go
+package main
+
+import (
+	&quot;fmt&quot;
+	&quot;io&quot;
+	&quot;net/http&quot;
+	&quot;net/url&quot;
+	&quot;strings&quot;
+)
+
+func SendSMS(numbers []string, message string, simSlot string, delay string) (string, error) {
+	apiURL := &quot;https://your-domain.com/api/sms/gateway&quot;
+	apiKey := &quot;YOUR_SECRET_API_KEY&quot;
+
+	data := url.Values{}
+	data.Set(&quot;auth_key&quot;, apiKey)
+	data.Set(&quot;action&quot;, &quot;push&quot;)
+	data.Set(&quot;numbers&quot;, strings.Join(numbers, &quot;,&quot;))
+	data.Set(&quot;message&quot;, message)
+	data.Set(&quot;sim_slot&quot;, simSlot)
+	data.Set(&quot;delay&quot;, delay)
+
+	resp, err := http.PostForm(apiURL, data)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &quot;&quot;, err
+	}
+
+	return string(body), nil
+}
+
+func main() {
+	res, _ := SendSMS([]string{&quot;01711111111&quot;, &quot;01822222222&quot;}, &quot;Hello from Golang!&quot;, &quot;0&quot;, &quot;2&quot;)
+	fmt.Println(res)
+}
+```</code></pre>
+  <p><a href="../README.md">&larr; Back to Netfie Main Documentation</a></p>
+</div>
+</body>
+</html>

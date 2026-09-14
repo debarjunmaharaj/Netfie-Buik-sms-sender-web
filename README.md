@@ -6,16 +6,25 @@
 
 <br><br>
 
-<img src="https://raw.githubusercontent.com/debarjunmaharaj/Netfie-Buik-sms-sender-web/refs/heads/main/icon.png" alt="Netfie App Logo" width="120" style="border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+<a href="https://play.google.com/store/apps/details?id=com.netfie.netfiebulksmssender.netfiebulksmssender" target="_blank">
+  <img src="https://raw.githubusercontent.com/debarjunmaharaj/Netfie-Buik-sms-sender-web/refs/heads/main/icon.png" alt="Netfie App Logo" width="120" style="border-radius: 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+</a>
 
 # 📱 Netfie Bulk SMS Gateway & Mobile Remote
 ### *Turn Any Android Device into an Enterprise-Grade, Self-Hosted SMS Gateway*
 
+[![Download on Google Play](https://img.shields.io/badge/Google_Play-Get%20Android%20App-34A853?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.netfie.netfiebulksmssender.netfiebulksmssender)
 [![Netfie Website](https://img.shields.io/badge/Netfie-Official%20Site-0070f3?style=for-the-badge&logo=google-chrome&logoColor=white)](https://netfie.com)
 [![WhatsApp Support](https://img.shields.io/badge/WhatsApp-01884189495-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/8801884189495)
 [![Direct Call](https://img.shields.io/badge/Call%20Us-01772326146-orange?style=for-the-badge&logo=phone&logoColor=white)](tel:01772326146)
 [![Developer Portfolio](https://img.shields.io/badge/Developer-Debarjun%20Chakraborty-8A2BE2?style=for-the-badge&logo=visual-studio-code&logoColor=white)](https://boost4all.com/@debarjunofficial)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=com.netfie.netfiebulksmssender.netfiebulksmssender" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" height="55">
+  </a>
+</p>
 
 <p align="center">
   <b>Zero Aggregator Fees • Dual SIM Support • Any Backend Stack • Complete Hardware Independence</b>
@@ -226,6 +235,10 @@ CREATE TABLE `sms_queue` (
   <tr>
     <td width="200"><b>Agency Name</b></td>
     <td><b>Netfie</b> (Authorized Web Development Partner)</td>
+  </tr>
+  <tr>
+    <td><b>Official Android App</b></td>
+    <td><a href="https://play.google.com/store/apps/details?id=com.netfie.netfiebulksmssender.netfiebulksmssender" target="_blank"><b>Get it on Google Play Store</b></a></td>
   </tr>
   <tr>
     <td><b>Official Website</b></td>

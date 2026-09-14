@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netfie Bulk SMS Gateway — WordPress & WooCommerce Integration</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1e293b; background: #f8fafc; }
+  .card { background: #ffffff; padding: 36px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+  pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-size: 14px; }
+  code { font-family: 'Courier New', Courier, monospace; }
+  .badge { display: inline-block; background: #0284c7; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; }
+  a { color: #0284c7; text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">Netfie Official Integration Guide</span>
+  <h1>WordPress & WooCommerce Integration</h1>
+  <pre><code># WordPress & WooCommerce Integration — Netfie Bulk SMS Gateway
+
+## Overview
+Send instant automated SMS notifications on WooCommerce order placement or status changes using wp_remote_post().
+
+&lt;?php
+add_action('woocommerce_order_status_processing', 'netfie_send_order_sms', 10, 1);
+
+function netfie_send_order_sms($order_id) {
+    $order = wc_get_order($order_id);
+    if (!$order) return;
+
+    $phone = $order->get_billing_phone();
+    $name  = $order->get_billing_first_name();
+
+    if (empty($phone)) return;
+
+    $message = "Hello {$name}, thank you for your order #{$order_id}! We have received it and are preparing it for delivery.";
+
+    wp_remote_post('https://your-domain.com/wp-json/netfie/v1/gateway', [
+        'method'    => 'POST',
+        'timeout'   => 15,
+        'body'      => [
+            'auth_key' => 'YOUR_SECRET_API_KEY',
+            'action'   => 'push',
+            'numbers'  => $phone,
+            'message'  => $message,
+            'sim_slot' => 0,
+            'delay'    => 2
+        ]
+    ]);
+}
+</code></pre>
+  <p><a href="../README.md">&larr; Back to Netfie Main Documentation</a></p>
+</div>
+</body>
+</html>

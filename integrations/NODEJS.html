@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netfie Bulk SMS Gateway — Node.js, Express & NestJS Integration</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1e293b; background: #f8fafc; }
+  .card { background: #ffffff; padding: 36px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+  pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-size: 14px; }
+  code { font-family: 'Courier New', Courier, monospace; }
+  .badge { display: inline-block; background: #0284c7; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; }
+  a { color: #0284c7; text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">Netfie Official Integration Guide</span>
+  <h1>Node.js, Express & NestJS Integration</h1>
+  <pre><code># Node.js, Express &amp; NestJS Integration — Netfie Bulk SMS Gateway
+
+## Overview
+Integrate Netfie Gateway into any modern Node.js, Express, NestJS, or Next.js backend.
+
+### 1. Using Axios:
+```javascript
+const axios = require(&#039;axios&#039;);
+const querystring = require(&#039;querystring&#039;);
+
+async function sendSms(numbers, message, simSlot = 0, delay = 2) {
+  const url = &#039;https://your-domain.com/api/sms/gateway&#039;;
+  const apiKey = &#039;YOUR_SECRET_API_KEY&#039;;
+
+  const payload = querystring.stringify({
+    auth_key: apiKey,
+    action: &#039;push&#039;,
+    numbers: Array.isArray(numbers) ? numbers.join(&#039;,&#039;) : numbers,
+    message: message,
+    sim_slot: simSlot,
+    delay: delay
+  });
+
+  const response = await axios.post(url, payload, {
+    headers: { &#039;Content-Type&#039;: &#039;application/x-www-form-urlencoded&#039; }
+  });
+
+  return response.data;
+}
+
+sendSms(&#039;01711111111&#039;, &#039;Hello from Express.js!&#039;)
+  .then(console.log)
+  .catch(console.error);
+```
+
+### 2. Using Native Fetch (Node 18+):
+```javascript
+async function sendSmsNative(numbers, message) {
+  const body = new URLSearchParams({
+    auth_key: &#039;YOUR_SECRET_API_KEY&#039;,
+    action: &#039;push&#039;,
+    numbers: numbers,
+    message: message
+  });
+
+  const res = await fetch(&#039;https://your-domain.com/api/sms/gateway&#039;, {
+    method: &#039;POST&#039;,
+    body: body
+  });
+  return await res.json();
+}
+```</code></pre>
+  <p><a href="../README.md">&larr; Back to Netfie Main Documentation</a></p>
+</div>
+</body>
+</html>

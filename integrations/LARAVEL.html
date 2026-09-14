@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netfie Bulk SMS Gateway — Laravel & Symfony Integration</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1e293b; background: #f8fafc; }
+  .card { background: #ffffff; padding: 36px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+  pre { background: #0f172a; color: #f8fafc; padding: 20px; border-radius: 12px; overflow-x: auto; font-size: 14px; }
+  code { font-family: 'Courier New', Courier, monospace; }
+  .badge { display: inline-block; background: #0284c7; color: white; padding: 6px 14px; border-radius: 9999px; font-weight: 600; font-size: 13px; margin-bottom: 12px; }
+  a { color: #0284c7; text-decoration: none; font-weight: 600; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">Netfie Official Integration Guide</span>
+  <h1>Laravel & Symfony Integration</h1>
+  <pre><code># Laravel &amp; Symfony Integration — Netfie Bulk SMS Gateway
+
+## Overview
+Trigger automated SMS alerts, OTP authentications, order notifications, and bulk marketing campaigns directly from Laravel or Symfony applications via your Netfie Gateway.
+
+---
+
+## 1. Laravel Integration (HTTP Client)
+
+### Environment Configuration (`.env`):
+```env
+NETFIE_SMS_URL=https://your-domain.com/api/sms/gateway
+NETFIE_SMS_KEY=your_secret_api_key_here
+```
+
+### Service Configuration (`config/services.php`):
+```php
+&#039;netfie&#039; =&gt; [
+    &#039;url&#039; =&gt; env(&#039;NETFIE_SMS_URL&#039;),
+    &#039;key&#039; =&gt; env(&#039;NETFIE_SMS_KEY&#039;),
+],
+```
+
+### Dedicated Service Class (`app/Services/NetfieSmsService.php`):
+```php
+namespace App\Services;
+
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+class NetfieSmsService
+{
+    protected string $url;
+    protected string $apiKey;
+
+    public function __construct()
+    {
+        $this-&gt;url = config(&#039;services.netfie.url&#039;);
+        $this-&gt;apiKey = config(&#039;services.netfie.key&#039;);
+    }
+
+    public function send(string|array $numbers, string $message, int $simSlot = 0, int $delay = 2): array
+    {
+        $numbersStr = is_array($numbers) ? implode(&#039;,&#039;, $numbers) : $numbers;
+
+        $response = Http::asForm()-&gt;post($this-&gt;url, [
+            &#039;auth_key&#039; =&gt; $this-&gt;apiKey,
+            &#039;action&#039;   =&gt; &#039;push&#039;,
+            &#039;numbers&#039;  =&gt; $numbersStr,
+            &#039;message&#039;  =&gt; $message,
+            &#039;sim_slot&#039; =&gt; $simSlot,
+            &#039;delay&#039;    =&gt; $delay,
+        ]);
+
+        if ($response-&gt;successful()) {
+            return $response-&gt;json();
+        }
+
+        Log::error(&#039;Netfie SMS Error: &#039; . $response-&gt;body());
+        return [&#039;success&#039; =&gt; false, &#039;message&#039; =&gt; &#039;Failed to reach gateway&#039;];
+    }
+}
+```
+
+---
+
+## 2. Symfony Integration (Symfony HttpClient)
+
+```php
+use Symfony\Component\HttpClient\HttpClient;
+
+$httpClient = HttpClient::create();
+$response = $httpClient-&gt;request(&#039;POST&#039;, &#039;https://your-domain.com/api/sms/gateway&#039;, [
+    &#039;body&#039; =&gt; [
+        &#039;auth_key&#039; =&gt; &#039;YOUR_SECRET_API_KEY&#039;,
+        &#039;action&#039;   =&gt; &#039;push&#039;,
+        &#039;numbers&#039;  =&gt; &#039;01711111111,01822222222&#039;,
+        &#039;message&#039;  =&gt; &#039;Order dispatched from Symfony!&#039;,
+        &#039;sim_slot&#039; =&gt; 0,
+        &#039;delay&#039;    =&gt; 2
+    ]
+]);
+
+$data = $response-&gt;toArray();
+```</code></pre>
+  <p><a href="../README.md">&larr; Back to Netfie Main Documentation</a></p>
+</div>
+</body>
+</html>
