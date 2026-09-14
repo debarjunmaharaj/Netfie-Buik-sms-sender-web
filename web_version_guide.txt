@@ -1,0 +1,232 @@
+========================================================
+  NETFIE BULK SMS — COMPLETE WEB VERSION GUIDE
+  How to build a web front-end for the Netfie Gateway
+========================================================
+
+INTRODUCTION
+============
+This guide explains how anyone can build a custom web application
+(PHP, Python, Node.js, pure HTML+JS, etc.) that connects to the
+Netfie Bulk SMS Gateway API and sends real SMS messages using an
+Android phone as the modem.
+
+No complex setup required — the WordPress plugin handles all the
+backend logic. Your web app only needs to make HTTP POST requests.
+
+------------------------------------------------------------
+STEP 1: SERVER REQUIREMENTS
+------------------------------------------------------------
+You need:
+  - A live web server (shared hosting, VPS, or local XAMPP)
+  - WordPress installed (any version 5.6+)
+  - Netfie SMS Product plugin installed and activated
+  - An Android phone with the Netfie app installed
+  - SSL (HTTPS) recommended for security
+
+------------------------------------------------------------
+STEP 2: INSTALL & CONFIGURE THE WORDPRESS PLUGIN
+------------------------------------------------------------
+1. Upload the "netfie-sms-product" plugin folder to:
+     /wp-content/plugins/netfie-sms-product/
+
+2. Activate it from WP Admin → Plugins.
+
+3. Go to WP Admin → Netfie SMS → Settings.
+
+4. Generate or enter a strong API Key (e.g., a 32-char random string).
+   KEEP THIS SECRET — it authenticates all API requests.
+
+5. Save settings.
+
+------------------------------------------------------------
+STEP 3: CONNECT THE ANDROID APP
+------------------------------------------------------------
+1. Install "Netfie Bulk SMS Gateway & Mobile Remote" on your Android phone.
+
+2. Open the app → Settings → Server Config:
+     API URL : https://yourwebsite.com/wp-json/netfie/v1/gateway
+     API Key : (same key you set in WordPress)
+
+3. Tap "Connect" — the app will appear in WP Admin → Netfie SMS → Devices.
+
+4. The app now polls for pending SMS tasks automatically (every few seconds).
+
+------------------------------------------------------------
+STEP 4: SEND YOUR FIRST SMS VIA API
+------------------------------------------------------------
+Using cURL (command line):
+
+  curl -X POST https://yourwebsite.com/wp-json/netfie/v1/gateway \
+    -d "auth_key=YOUR_API_KEY" \
+    -d "action=push" \
+    -d "numbers=01711111111,01822222222" \
+    -d "message=Hello from Netfie!" \
+    -d "sim_slot=0" \
+    -d "delay=2"
+
+Expected response:
+  {"success":true,"message":"Tasks added","task_ids":[1,2],"skipped":[]}
+
+------------------------------------------------------------
+STEP 5: BUILD YOUR WEB APP — CODE EXAMPLES
+------------------------------------------------------------
+
+--- EXAMPLE 1: Pure HTML + JavaScript (no backend needed) ---
+
+  See "integration_example.html" for a full working demo.
+
+  Key JavaScript snippet:
+
+  async function sendSMS(numbers, message) {
+    const response = await fetch('https://yourwebsite.com/wp-json/netfie/v1/gateway', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        auth_key: 'YOUR_API_KEY',
+        action: 'push',
+        numbers: numbers,
+        message: message,
+        sim_slot: 0,
+        delay: 2
+      })
+    });
+    const data = await response.json();
+    console.log(data);
+  }
+
+  SECURITY WARNING: Never expose your auth_key in client-side JS
+  on a public website. Use a backend proxy (PHP, Node, Python) to
+  keep the key secret. See examples below.
+
+--- EXAMPLE 2: PHP Backend ---
+
+  <?php
+  $api_url = 'https://yourwebsite.com/wp-json/netfie/v1/gateway';
+  $api_key  = 'YOUR_SECRET_API_KEY'; // store in env or config file
+
+  $data = [
+    'auth_key' => $api_key,
+    'action'   => 'push',
+    'numbers'  => '01711111111,01822222222',
+    'message'  => 'Hello from PHP!',
+    'sim_slot' => 0,
+    'delay'    => 2,
+  ];
+
+  $ch = curl_init($api_url);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  $result = curl_exec($ch);
+  curl_close($ch);
+
+  $response = json_decode($result, true);
+  print_r($response);
+  ?>
+
+--- EXAMPLE 3: Python (requests library) ---
+
+  import requests
+
+  url = 'https://yourwebsite.com/wp-json/netfie/v1/gateway'
+  payload = {
+      'auth_key': 'YOUR_SECRET_API_KEY',
+      'action': 'push',
+      'numbers': '01711111111,01822222222',
+      'message': 'Hello from Python!',
+      'sim_slot': 0,
+      'delay': 2,
+  }
+  response = requests.post(url, data=payload)
+  print(response.json())
+
+--- EXAMPLE 4: Node.js (axios) ---
+
+  const axios = require('axios');
+  const qs = require('querystring');
+
+  axios.post('https://yourwebsite.com/wp-json/netfie/v1/gateway',
+    qs.stringify({
+      auth_key: 'YOUR_SECRET_API_KEY',
+      action: 'push',
+      numbers: '01711111111',
+      message: 'Hello from Node.js!',
+      sim_slot: 0,
+      delay: 2,
+    })
+  ).then(res => console.log(res.data));
+
+--- EXAMPLE 5: List all tasks ---
+
+  curl -X POST https://yourwebsite.com/wp-json/netfie/v1/gateway \
+    -d "auth_key=YOUR_API_KEY" \
+    -d "action=list" \
+    -d "status=sent" \
+    -d "limit=100"
+
+--- EXAMPLE 6: Schedule an SMS for the future ---
+
+  // PHP: schedule SMS for 1 hour from now
+  $scheduled_time = time() + 3600;
+
+  $data = [
+    'auth_key'       => $api_key,
+    'action'         => 'push',
+    'numbers'        => '01711111111',
+    'message'        => 'Scheduled reminder!',
+    'scheduled_time' => $scheduled_time,
+  ];
+  // ... same curl as above
+
+------------------------------------------------------------
+STEP 6: BUILDING A FULL DASHBOARD (OPTIONAL)
+------------------------------------------------------------
+If you want a full management UI, build pages that:
+
+  1. SEND PAGE       → form to enter numbers & message → calls "push"
+  2. HISTORY PAGE    → calls "list" to show sent/failed tasks
+  3. STATUS PAGE     → polls "list" every 10s and updates counts
+  4. DEVICE STATUS   → calls "list" with device_id filter (advanced)
+
+See "API_REFERENCE.html" for all available parameters.
+
+------------------------------------------------------------
+SECURITY BEST PRACTICES
+------------------------------------------------------------
+1. NEVER expose auth_key in client-side JavaScript on public pages.
+2. Store auth_key in environment variables or a config file outside webroot.
+3. Use HTTPS (SSL) on your WordPress site.
+4. Use the blacklist feature to protect opt-out numbers.
+5. Validate phone numbers before sending (Bangladesh: 01XXXXXXXXX format).
+6. Add CORS headers if your web app is on a different domain than WordPress.
+
+------------------------------------------------------------
+TROUBLESHOOTING
+------------------------------------------------------------
+Problem: API returns {"success":false,"message":"Unauthorized"}
+Fix    : Check your auth_key. Make sure no extra spaces or line breaks.
+
+Problem: Tasks show "pending" but never get sent
+Fix    : Make sure the Android app is running and connected.
+         Check WP Admin → Netfie SMS → Devices to see if phone is online.
+
+Problem: CORS error in browser console
+Fix    : Add to your WordPress wp-config.php:
+           header('Access-Control-Allow-Origin: *');
+         Or better: build a PHP proxy page on your own domain.
+
+Problem: SMS is sent but recipient gets it from unknown number
+Fix    : This is expected — SMS comes from your Android SIM card number.
+
+------------------------------------------------------------
+USEFUL LINKS
+------------------------------------------------------------
+  Netfie Website        : https://netfie.com
+  WP Plugin Admin       : https://yourwebsite.com/wp-admin/ → Netfie SMS
+  API Endpoint          : https://yourwebsite.com/wp-json/netfie/v1/gateway
+  Full API Reference    : See API_REFERENCE.html in this folder
+  Live Demo             : See integration_example.html in this folder
+
+========================================================
+  END OF WEB VERSION GUIDE
+========================================================
