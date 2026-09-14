@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "Netfie Bulk SMS Gateway API",
+    "_postman_id": "b3d81b94-81fa-4bb3-8994-netfie-gateway-v1",
+    "description": "Ready-to-use Postman Collection for testing and integrating with the Netfie Bulk SMS Gateway REST API endpoint.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://your-domain.com/wp-json/netfie/v1/gateway",
+      "type": "string"
+    },
+    {
+      "key": "auth_key",
+      "value": "YOUR_SECRET_API_KEY",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Push Bulk SMS Tasks",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "auth_key", "value": "{{auth_key}}", "type": "text" },
+            { "key": "action", "value": "push", "type": "text" },
+            { "key": "numbers", "value": "01711111111,01822222222", "type": "text" },
+            { "key": "message", "value": "Hello from Postman! Your order has been placed.", "type": "text" },
+            { "key": "sim_slot", "value": "0", "type": "text" },
+            { "key": "delay", "value": "2", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}",
+          "host": ["{{base_url}}"]
+        }
+      }
+    },
+    {
+      "name": "2. Pull Pending Tasks (App Simulation)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "auth_key", "value": "{{auth_key}}", "type": "text" },
+            { "key": "action", "value": "pull", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}",
+          "host": ["{{base_url}}"]
+        }
+      }
+    },
+    {
+      "name": "3. Update Task Status (App Simulation)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "auth_key", "value": "{{auth_key}}", "type": "text" },
+            { "key": "action", "value": "update_status", "type": "text" },
+            { "key": "task_id", "value": "101", "type": "text" },
+            { "key": "status", "value": "sent", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}",
+          "host": ["{{base_url}}"]
+        }
+      }
+    },
+    {
+      "name": "4. List Tasks & Logs (Web UI)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "auth_key", "value": "{{auth_key}}", "type": "text" },
+            { "key": "action", "value": "list", "type": "text" },
+            { "key": "limit", "value": "50", "type": "text" },
+            { "key": "offset", "value": "0", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}",
+          "host": ["{{base_url}}"]
+        }
+      }
+    }
+  ]
+}
